@@ -22,6 +22,6 @@
 ```
 git clone git@github.com:lastuniverse/likeFB.git
 ```
-## участие в разработке
+## Участие в разработке
 
 Добавляйтесь в команду разработчиков на https://trello.com/invite/likefb/a271fb78a8e879242aa1865207a1ac9a
