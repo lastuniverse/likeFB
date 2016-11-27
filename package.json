@@ -1,0 +1,23 @@
+{
+  "name": "likefb",
+  "version": "1.0.0",
+  "description": "service message collector",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lastuniverse/likeFB.git"
+  },
+  "author": "lastuniverse",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lastuniverse/likeFB/issues"
+  },
+  "homepage": "https://github.com/lastuniverse/likeFB#readme",
+  "dependencies": {
+    "options": "0.0.6",
+    "ws": "^1.1.1"
+  }
+}
