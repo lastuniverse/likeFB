@@ -33,7 +33,7 @@ app.use(/.*/, function(req,res,next){
 // создаем второй миделваре обработчик для рассылки /system
 app.use("/system", function(req,res,next){
   res.broadcast();
-  console.log("сработал middleware для рассылки /system:", res.message);
+  console.log("сработал middleware 2 для рассылки /system:", res.message);
 });
 
 
