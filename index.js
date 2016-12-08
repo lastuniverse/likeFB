@@ -6,9 +6,22 @@
  * MIT Licensed
  */
 
+
 var messanger = require('./lib/Messanger');
 
-var server = new messanger({port: 3000});
+var app = new messanger({port: 3000});
+
+app.use("/__system__", function(req,res,next){
+  console.log("1. /__system__");
+  next();
+});
+
+app.use(/\/.*/, function(req,res,next){
+  console.log("2. /__system__");
+  res.send("/test","1234");
+  res.broadcast();
+});
+
 
 // var Server = require('./lib/LFBserver');
 
@@ -18,24 +31,28 @@ var server = new messanger({port: 3000});
 
 // var server = new LFB.Server({port: 3000});
 
-
-
-
 var WebSocket = require('ws');
 var ws1 = new WebSocket('ws://localhost:3000/', {
   protocolVersion: 8,
   origin: 'http://localhost:3000/'
 });
 
+
+
+
+
 ws1.on('open', function open() {
   //console.log('connected');
   ws1.send(
-    JSON.stringify({name: "__system__",data: {test: "blablabla1"}})
+    JSON.stringify({name: "/__system__",data: {test: "blablabla1"}})
   );
-  ws1.send(
-    JSON.stringify({name: "12345",data: {test: "blablabla2"}})
-  );
-  ws1.send(JSON.stringify("blablabla3"));
+  // ws1.send(
+  //   JSON.stringify({name: "12345",data: {test: "blablabla2"}})
+  // );
+  // ws1.send(
+  //   JSON.stringify({data: {test: "blablabla3"}})
+  // );
+  // ws1.send(JSON.stringify("blablabla4"));
 
 });
 
