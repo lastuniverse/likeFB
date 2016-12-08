@@ -1,36 +1,47 @@
 'use strict';
 
-/*!
- * ws: a node.js websocket client
- * Copyright(c) 2011 Einar Otto Stangvik <einaros@gmail.com>
- * MIT Licensed
- */
-
-
+// Подключаем модуль рассылки сообщений
 var messanger = require('./lib/Messanger');
 
+// Создаем сервер рассылки сообщений. Действует по принципу express (в перспективе :)
+// с той лиш разницей что в качестве пути указывается имя рассылки
+// в объекте для тестирования все входящие подключения автоматически подписываются на рассылку /system
 var app = new messanger({port: 3000});
 
-app.use("/__system__", function(req,res,next){
-  console.log("1. /__system__");
+// создаем миделваре обработчик для рассылки /system
+app.use("/system", function(req,res,next){
+  console.log("1. для рассылки /system:", res.message);
   next();
 });
 
-app.use(/\/.*/, function(req,res,next){
-  console.log("2. /__system__");
+// создаем второй миделваре обработчик для любой рассылки
+app.use(/.*/, function(req,res,next){
+  console.log("2. для всех рассылок: ", res.message);
   res.send("/test","1234");
   res.broadcast();
+
+  // res содердит методы:
+  //  res.send - позволяет отправить сообщение обратно отправителю любое количество раз:
+  //    res.send(); // эхо полученного сообщения
+  //    res.send(data); // произвольное сообщение от имени рассылки req.message.name
+  //    res.send(name, data); // произвольное сообщение от имени произвольной рассылки
+  //  res.broadcast - позволяет отправить сообщение всем подписанным на рассылку name:
+  //    res.send(); // эхо полученного сообщения всем подписанным на рассылку req.message.name (прекращает дальнейшую обработку последующих миделваре обработчиков)
+  //    res.send(data); // произвольное сообщение всем подписанным на рассылку req.message.name (прекращает дальнейшую обработку последующих миделваре обработчиков)
+  //    res.send(name, data); // произвольное сообщение от имени произвольной рассылки
+  //  res.end - прекращает дальнейшую обработку последующих миделваре обработчиков
+  //  return res.next - перейти к следующему подходящему миделваре обработчику (если такой есть)
+  //  в случае если в процессе выполнения цепочки миделваре обработчиков не было выполнено ни одного из методов ошибки не возникнет,
+  // это будет просто аналогично игнорированнию данного сообщения
 });
 
 
-// var Server = require('./lib/LFBserver');
 
-// var LFB = {};
 
-// LFB.Server = Server;
 
-// var server = new LFB.Server({port: 3000});
+// далее имитируем браузерных клиентов
 
+// первый клиент подключается к серверу
 var WebSocket = require('ws');
 var ws1 = new WebSocket('ws://localhost:3000/', {
   protocolVersion: 8,
@@ -38,22 +49,13 @@ var ws1 = new WebSocket('ws://localhost:3000/', {
 });
 
 
-
-
-
 ws1.on('open', function open() {
   //console.log('connected');
-  ws1.send(
-    JSON.stringify({name: "/__system__",data: {test: "blablabla1"}})
-  );
-  // ws1.send(
-  //   JSON.stringify({name: "12345",data: {test: "blablabla2"}})
-  // );
-  // ws1.send(
-  //   JSON.stringify({data: {test: "blablabla3"}})
-  // );
-  // ws1.send(JSON.stringify("blablabla4"));
 
+  // и отправляет сообщение в рассылку /system
+  ws1.send(
+    JSON.stringify({name: "/system",data: {test: "blablabla1"}})
+  );
 });
 
 ws1.on('close', function close() {
@@ -61,9 +63,12 @@ ws1.on('close', function close() {
 });
 
 ws1.on('message', function (data, flags) {
+  // выводим все полученные сообщения первым клиентом
   console.log('ws1 get message: ', data);
 });
 
+
+// второй клиент подключается к серверу
 var ws2 = new WebSocket('ws://localhost:3000/', {
   protocolVersion: 8,
   origin: 'http://localhost:3000/'
@@ -71,7 +76,6 @@ var ws2 = new WebSocket('ws://localhost:3000/', {
 
 ws2.on('open', function open() {
   // console.log('connected');
-  // ws2.send("ws2.send1", {mask: true});
 });
 
 ws2.on('close', function close() {
@@ -79,5 +83,6 @@ ws2.on('close', function close() {
 });
 
 ws2.on('message', function (data, flags) {
+  // выводим все полученные сообщения вторым клиентом
   console.log('ws2 get message: ', data);
 });
