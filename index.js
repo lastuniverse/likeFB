@@ -12,7 +12,7 @@ var app = new messanger({port: 3000});
 app.use(/.*/, function(req,res,next){
   console.log("сработал middleware 1 для всех рассылок: ", res.message);
   res.send("/test","0000000000");  // дойдет, так как отправитель известен, хоть рассылки и не существует
-  res.broadcast("/test","1111111111"); // не дойдет, рассылки /test не существует
+  //res.broadcast("/test","1111111111"); // не дойдет, рассылки /test не существует
   next();
   // res содердит методы:
   //  res.send - позволяет отправить сообщение обратно отправителю любое количество раз:
@@ -32,10 +32,23 @@ app.use(/.*/, function(req,res,next){
 
 // создаем второй миделваре обработчик для рассылки /system
 app.use("/system", function(req,res,next){
-  res.broadcast();
+  //res.broadcast();
   console.log("сработал middleware 2 для рассылки /system:", res.message);
 });
 
+app.use([], function(req,res,next){
+  //res.broadcast();
+  console.log("сработал middleware 3 для рассылки /system:", res.message);
+});
+app.use({}, function(req,res,next){
+  //res.broadcast();
+  console.log("сработал middleware 4 для рассылки /system:", res.message);
+});
+app.use(/\/system/, function(req,res,next){
+  //res.broadcast();
+  console.log("сработал middleware 5 для рассылки /system:", res.message);
+  res.end();
+});
 
 // далее имитируем браузерных клиентов
 
