@@ -32,7 +32,7 @@ var app = new Messanger( {
 // } );
 
 // создаем второй миделваре обработчик для рассылки /system
-app.use( "/system", function( req, res, next ) {
+app.use( "/system/test", function( req, res, next ) {
   //res.broadcast();
   console.log( "сработал middleware 2 для рассылки /system:", res.message );
   next();
@@ -84,7 +84,7 @@ ws1.on( 'open', function open() {
   );
   ws1.send(
     JSON.stringify( {
-      name: "/system/all",
+      name: "/system/test",
       data: {
         test: "4444444444444"
       }
